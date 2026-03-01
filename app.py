@@ -28,17 +28,9 @@ try:
     else:
         df_mostrar = df
 
-    # 4. Buscador
-    st.subheader("Filtrar Unidades")
-    busqueda = st.text_input("", placeholder="Escribí Marca o Modelo...")
-
-    if busqueda:
-        df_mostrar = df_mostrar[
-            df_mostrar['Marca'].astype(str).str.contains(busqueda, case=False) | 
-            df_mostrar['Modelo'].astype(str).str.contains(busqueda, case=False)
-        ]
-
-    st.markdown(f"**{len(df_mostrar)} Unidades Disponibles**")
+# 4. Buscador con título nuevo
+    st.markdown(f"<h2 style='color: #004080; margin-bottom: -10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
+    busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...")
 
     # 5. Grilla de Autos (Estructura limpia para evitar rectángulos)
     if len(df_mostrar) > 0:
