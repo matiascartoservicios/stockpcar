@@ -32,22 +32,33 @@ try:
     st.markdown(f"<h2 style='color: #004080; margin-bottom: -10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
     busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...")
 
-    # 5. Grilla de Autos (Estructura limpia para evitar rectángulos)
+  # 5. Grilla de Autos
     if len(df_mostrar) > 0:
         cols = st.columns(3)
         
         for i, (index, row) in enumerate(df_mostrar.iterrows()):
             with cols[i % 3]:
-                # Mostramos la foto
+                # --- AQUÍ EMPIEZA LO NUEVO ---
+                
+                # 1. Foto Principal
                 st.image(row['Foto_URL'], use_container_width=True)
                 
-                # Datos del auto
-                st.subheader(f"{row['Marca']} {row['Modelo']}")
+                # 2. Galería Desplegable (Lo que querías esconder)
+                fotos_extra = []
+                for col_foto in ['Foto2', 'Foto3', 'Foto4']:
+                    if col_foto in row and pd.notna(row[col_foto]):
+                        fotos_extra.append(row[col_foto])
                 
-                # Info SIN ICONOS
+                if fotos_extra:
+                    with st.expander("📸 Ver más fotos de esta unidad"):
+                        for url in fotos_extra:
+                            st.image(url, use_container_width=True)
+                
+                # 3. Título y Datos
+                st.subheader(f"{row['Marca']} {row['Modelo']}")
                 st.write(f"Año: {row['Año']} | KM: {row['KM']}")
                 
-                # Opción B: Más grande y color de la agencia
+                # 4. Precio Grande y Azul
                 st.markdown(f"<h2 style='color: #004080;'>$ {row['Precio']}</h2>", unsafe_allow_html=True)
                 
                 st.markdown("---")
