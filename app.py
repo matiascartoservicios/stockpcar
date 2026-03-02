@@ -50,11 +50,13 @@ try:
                 # 1. Foto Principal
                 st.image(row['Foto_URL'], use_container_width=True)
                 
-                # 2. Ver más fotos (Expander)
+                # 2. Galería Desplegable (Busca todas las columnas que empiecen con 'Foto')
                 fotos_extra = []
-                for col_foto in ['Foto2', 'Foto3', 'Foto4']:
-                    if col_foto in row and pd.notna(row[col_foto]):
-                        fotos_extra.append(row[col_foto])
+                # Recorremos todas las columnas del Excel buscando las que digan "Foto" seguido de algo
+                for col_name in row.index:
+                    if col_name.startswith('Foto') and col_name != 'Foto_URL':
+                        if pd.notna(row[col_name]) and str(row[col_name]).strip() != "":
+                            fotos_extra.append(row[col_name])
                 
                 if fotos_extra:
                     with st.expander("📸 Ver más fotos"):
@@ -82,6 +84,7 @@ try:
         st.info("No hay unidades que coincidan con esa búsqueda. ¡Probá con otra!")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
