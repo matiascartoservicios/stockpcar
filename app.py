@@ -61,29 +61,28 @@ try:
                         for url in fotos_extra:
                             st.image(url, use_container_width=True)
                 
-                # 3. Título y Datos (Ajustado para que no falle si falta una columna)
+              # 3. Título y Datos
                 km_texto = str(row['KM']).replace('.0', '')
                 st.subheader(f"{row['Marca']} {row['Modelo']}")
                 
-                # Datos básicos
-                anio = row['Año']
-                # Si agregaste 'Motor' o 'Transmision', se muestran acá:
-                motor = row['Motor'] if 'Motor' in row else ""
+                # Datos básicos (Año y KM siempre van)
+                st.write(f"Año: {row['Año']} | KM: {km_texto}")
                 
-                st.write(f"Año: {anio} | KM: {km_texto}")
-                if motor:
-                    st.write(f"⚙️ {motor}")
+                # --- COLUMNA EXTRA (Solo si tiene texto y no es nan) ---
+                if 'Motor' in row and pd.notna(row['Motor']) and str(row['Motor']).strip() != "":
+                    st.write(str(row['Motor']))
                 
-                # 4. Precio (Ahora toma el símbolo directamente del Excel)
-                precio_mostrar = str(row['Precio'])
-                
-                # Le damos el color azul característico de PCAR
+                # 4. Precio (Limpio, tal cual lo pongas en el Excel)
+                precio_mostrar = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
                 st.markdown(f"<h2 style='color: #004080;'>{precio_mostrar}</h2>", unsafe_allow_html=True)
                 st.markdown("---")
+                
+               
     else:
         st.info("No hay unidades que coincidan con esa búsqueda. ¡Probá con otra!")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
