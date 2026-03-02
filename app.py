@@ -28,22 +28,21 @@ try:
     else:
         df_mostrar = df
 
-# 4. Buscador
+# 4. Buscador (Convertimos a minúsculas para que no falle)
     st.markdown(f"<h2 style='color: #004080; margin-bottom: -10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
-    busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...").lower()
+    busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...").strip().lower()
 
-    # --- FILTRO LÓGICO ---
-    # Esto hace que la lista se achique a medida que escribís
+    # --- FILTRO LÓGICO SEGURO ---
     df_filtrado = df_mostrar.copy()
-    if busqueda:
-        df_filtrado = df_mostrar[
-            df_mostrar['Marca'].str.lower().contains(busqueda, na=False) | 
-            df_mostrar['Modelo'].str.lower().contains(busqueda, na=False)
-        ]
 
-    # 5. Grilla de Autos (Ahora usamos df_filtrado)
+    if busqueda:
+        # Esto busca en Marca y Modelo ignorando mayúsculas/minúsculas y errores de datos vacíos
+        mask_marca = df_filtrado['Marca'].astype(str).str.lower().str.contains(busqueda, na=False)
+        mask_modelo = df_filtrado['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False)
+        df_filtrado = df_filtrado[mask_marca | mask_modelo]
+
+    # 5. Grilla de Autos
     if not df_filtrado.empty:
-        # Armamos columnas de a 3 para que quede prolijo
         cols = st.columns(3)
         
         for i, (index, row) in enumerate(df_filtrado.iterrows()):
@@ -62,22 +61,27 @@ try:
                         for url in fotos_extra:
                             st.image(url, use_container_width=True)
                 
-                # 3. Título y Datos
+                # 3. Título y Datos (Ajustado para que no falle si falta una columna)
                 km_texto = str(row['KM']).replace('.0', '')
                 st.subheader(f"{row['Marca']} {row['Modelo']}")
                 
-                # Aquí mostramos los datos (incluyendo la columna nueva que agregaste)
-                # Si tu columna nueva se llama 'Motor', cambialo acá:
-                motor_info = row['Motor'] if 'Motor' in row else ""
-                st.write(f"Año: {row['Año']} | KM: {km_texto} | {motor_info}")
+                # Datos básicos
+                anio = row['Año']
+                # Si agregaste 'Motor' o 'Transmision', se muestran acá:
+                motor = row['Motor'] if 'Motor' in row else ""
+                
+                st.write(f"Año: {anio} | KM: {km_texto}")
+                if motor:
+                    st.write(f"⚙️ {motor}")
                 
                 # 4. Precio
                 st.markdown(f"<h2 style='color: #004080;'>$ {row['Precio']}</h2>", unsafe_allow_html=True)
                 st.markdown("---")
     else:
-        st.warning("No se encontraron unidades que coincidan con tu búsqueda.")
+        st.info("No hay unidades que coincidan con esa búsqueda. ¡Probá con otra!")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
