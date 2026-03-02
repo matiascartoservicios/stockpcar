@@ -74,13 +74,17 @@ try:
                 if motor:
                     st.write(f"⚙️ {motor}")
                 
-                # 4. Precio
-                st.markdown(f"<h2 style='color: #004080;'>$ {row['Precio']}</h2>", unsafe_allow_html=True)
+                # 4. Precio (Ahora toma el símbolo directamente del Excel)
+                precio_mostrar = str(row['Precio'])
+                
+                # Le damos el color azul característico de PCAR
+                st.markdown(f"<h2 style='color: #004080;'>{precio_mostrar}</h2>", unsafe_allow_html=True)
                 st.markdown("---")
     else:
         st.info("No hay unidades que coincidan con esa búsqueda. ¡Probá con otra!")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
