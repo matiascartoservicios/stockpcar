@@ -54,9 +54,10 @@ try:
                         for url in fotos_extra:
                             st.image(url, use_container_width=True)
                 
-                # 3. Título y Datos
+              # 3. Título y Datos (Corregido para que no borre ceros)
+                km_texto = str(row['KM']).replace('.0', '') # Por si Python le agrega un decimal molesto
                 st.subheader(f"{row['Marca']} {row['Modelo']}")
-                st.write(f"Año: {row['Año']} | KM: {row['KM']}")
+                st.write(f"Año: {row['Año']} | KM: {km_texto}")
                 
                 # 4. Precio Grande y Azul
                 st.markdown(f"<h2 style='color: #004080;'>$ {row['Precio']}</h2>", unsafe_allow_html=True)
@@ -67,3 +68,4 @@ try:
 
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
