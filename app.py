@@ -28,29 +28,37 @@ try:
     else:
         df_mostrar = df
 
-# 4. Buscador con título nuevo
+# 4. Buscador
     st.markdown(f"<h2 style='color: #004080; margin-bottom: -10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
-    busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...")
+    busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...").lower()
 
-  # 5. Grilla de Autos
-    if len(df_mostrar) > 0:
+    # --- FILTRO LÓGICO ---
+    # Esto hace que la lista se achique a medida que escribís
+    df_filtrado = df_mostrar.copy()
+    if busqueda:
+        df_filtrado = df_mostrar[
+            df_mostrar['Marca'].str.lower().contains(busqueda, na=False) | 
+            df_mostrar['Modelo'].str.lower().contains(busqueda, na=False)
+        ]
+
+    # 5. Grilla de Autos (Ahora usamos df_filtrado)
+    if not df_filtrado.empty:
+        # Armamos columnas de a 3 para que quede prolijo
         cols = st.columns(3)
         
-        for i, (index, row) in enumerate(df_mostrar.iterrows()):
+        for i, (index, row) in enumerate(df_filtrado.iterrows()):
             with cols[i % 3]:
-                # --- AQUÍ EMPIEZA LO NUEVO ---
-                
                 # 1. Foto Principal
                 st.image(row['Foto_URL'], use_container_width=True)
                 
-                # 2. Galería Desplegable (Lo que querías esconder)
+                # 2. Ver más fotos (Expander)
                 fotos_extra = []
                 for col_foto in ['Foto2', 'Foto3', 'Foto4']:
                     if col_foto in row and pd.notna(row[col_foto]):
                         fotos_extra.append(row[col_foto])
                 
                 if fotos_extra:
-                    with st.expander("📸 Ver más fotos de esta unidad"):
+                    with st.expander("📸 Ver más fotos"):
                         for url in fotos_extra:
                             st.image(url, use_container_width=True)
                 
@@ -58,20 +66,19 @@ try:
                 km_texto = str(row['KM']).replace('.0', '')
                 st.subheader(f"{row['Marca']} {row['Modelo']}")
                 
-                # Agregamos la nueva columna aquí:
+                # Aquí mostramos los datos (incluyendo la columna nueva que agregaste)
+                # Si tu columna nueva se llama 'Motor', cambialo acá:
                 motor_info = row['Motor'] if 'Motor' in row else ""
-                
                 st.write(f"Año: {row['Año']} | KM: {km_texto} | {motor_info}")
                 
-                # 4. Precio Grande y Azul
+                # 4. Precio
                 st.markdown(f"<h2 style='color: #004080;'>$ {row['Precio']}</h2>", unsafe_allow_html=True)
-                
                 st.markdown("---")
     else:
-        st.info("No hay unidades que coincidan con la búsqueda.")
-
+        st.warning("No se encontraron unidades que coincidan con tu búsqueda.")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
