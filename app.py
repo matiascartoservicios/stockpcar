@@ -5,7 +5,7 @@ import pandas as pd
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
 # 2. LOGO DE LA AGENCIA
-URL_DE_TU_LOGO = 'https://i.postimg.cc/GmQsygfB/PCARA-Mesa-de-trabajo-1.png' 
+URL_DE_TU_LOGO = 'https://i.postimg.cc/Cx1wcv1f/PCARA-Mesa-de-trabajo-1.png' 
 
 st.markdown(f"""
     <div style='text-align: center;'>
@@ -68,5 +68,6 @@ try:
 
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
