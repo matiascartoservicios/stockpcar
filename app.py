@@ -39,30 +39,26 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# 3. --- BOTONES DE CONTACTO (Ubicación y WhatsApp 50/50) ---
-col_ubi, col_wa = st.columns(2)
+# 3. --- BOTONES DE CONTACTO (Ubicación y WhatsApp 50/50 REALES) ---
+# Cambiá el número acá
+NUMERO_WA = "5491122334455" 
 
-with col_ubi:
-    st.markdown(f"""
-        <a href='https://maps.google.com/?cid=1158533433268707757&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl' target='_blank' style='text-decoration: none;'>
-            <div style='background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px;'>
-                <span style='color: #004080; font-weight: bold; font-size: 18px;'>📍 UBICACIÓN</span><br>
-                <span style='color: #555; font-size: 13px;'>VISITANOS!!</span>
+st.markdown(f"""
+    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 25px;">
+        <a href="https://maps.google.com/?cid=1158533433268707757&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN</span>
+                <span style="color: #555; font-size: 12px;">VISITANOS!!</span>
             </div>
         </a>
-    """, unsafe_allow_html=True)
-
-with col_wa:
-    # Reemplaza el número con el de tu jefe (con código de área, ej: 54911...)
-    NUMERO_WA = "5491122334455" 
-    st.markdown(f"""
-        <a href='https://wa.me/{NUMERO_WA}?text=Hola!%20Vengo%20desde%20el%20catálogo%20PCAR' target='_blank' style='text-decoration: none;'>
-            <div style='background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 80px;'>
-                <span style='color: white; font-weight: bold; font-size: 18px;'>💬 WHATSAPP</span><br>
-                <span style='color: white; font-size: 13px;'>CONSULTANOS!!</span>
+        <a href="https://wa.me/{NUMERO_WA}?text=Hola!%20Vengo%20desde%20el%20catálogo%20PCAR" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP</span>
+                <span style="color: white; font-size: 12px;">CONSULTANOS!!</span>
             </div>
         </a>
-    """, unsafe_allow_html=True)
+    </div>
+""", unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -136,6 +132,7 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
 
