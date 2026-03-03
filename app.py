@@ -50,7 +50,7 @@ try:
                 # 1. Foto Principal
                 st.image(row['Foto_URL'], use_container_width=True)
                 
-                # 2. Galería de Fotos
+                # 2. Galería de Fotos (Limpia y funcional)
                 fotos_extra = []
                 for col_name in row.index:
                     if col_name.startswith('Foto') and col_name != 'Foto_URL':
@@ -61,10 +61,6 @@ try:
                     with st.expander("📸 Ver más fotos"):
                         for url in fotos_extra:
                             st.image(url, use_container_width=True)
-                        
-                        # BOTÓN SIMPLE PARA VOLVER AL INICIO
-                        if st.button("⬆️ Volver al Inicio", key=f"btn_{index}"):
-                            st.rerun() # Esto refresca la página y cierra todos los desplegables
                 
               # 3. Título y Datos
                 km_texto = str(row['KM']).replace('.0', '')
@@ -87,6 +83,7 @@ try:
         st.info("No hay unidades que coincidan con esa búsqueda. ¡Probá con otra!")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
