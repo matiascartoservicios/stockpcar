@@ -41,7 +41,7 @@ st.markdown("---")
 
 # 3. --- BOTONES DE CONTACTO (Ubicación y WhatsApp 50/50 REALES) ---
 # Cambiá el número acá
-NUMERO_WA = "+54 9 11 6497-7257" 
+NUMERO_WA = "+5491164977257" 
 
 st.markdown(f"""
     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 25px;">
@@ -132,6 +132,7 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
 
