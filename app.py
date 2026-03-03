@@ -4,6 +4,30 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
+# --- ESTILO CSS PARA PESTAÑAS 50/50 Y CENTRADAS ---
+st.markdown("""
+    <style>
+    /* Estira las pestañas para que ocupen el 50% cada una */
+    div[data-baseweb="tab-list"] {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 0px !important;
+    }
+    button[data-baseweb="tab"] {
+        width: 50% !important;
+        flex-grow: 1 !important;
+        text-align: center !important;
+        height: 50px !important;
+    }
+    /* Tamaño de letra y estilo del texto en pestañas */
+    div[data-testid="stMarkdownContainer"] p {
+        font-size: 18px !important;
+        font-weight: bold !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # 2. LOGO DE LA AGENCIA
 URL_DE_TU_LOGO = 'https://i.postimg.cc/Cx1wcv1f/PCARA-Mesa-de-trabajo-1.png' 
 
@@ -15,7 +39,7 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# --- UBICACIÓN ---
+# 3. UBICACIÓN
 st.markdown(f"""
     <div style='text-align: center; margin-top: -10px; margin-bottom: 25px;'>
         <a href='https://maps.google.com/?cid=1158533433268707757&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl' target='_blank' style='text-decoration: none;'>
@@ -27,7 +51,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# 3. Conexión con Google Sheets
+# 4. Conexión con Google Sheets
 SHEET_ID = '1TnIRP4doFAJk5u2lB6qGwqNJHPY4LNXWdx8KQaHWrSc'
 url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
 
@@ -40,28 +64,25 @@ try:
     else:
         df_mostrar = df
 
-    # 4. Buscador
+    # 5. Buscador
     st.markdown(f"<h2 style='color: #004080; margin-bottom: -10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
     busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...").strip().lower()
 
-    # --- NUEVA SECCIÓN DE PESTAÑAS ---
-    tab_autos, tab_motos = st.tabs(["🚗 AUTOS", "🏍️ MOTOS"])
-
-    # Definimos como mostrar cada unidad
-    def renderizar_unidad(dataframe):
-        if not dataframe.empty:
-            # Filtro por buscador dentro de la pestaña
+    # --- FUNCIÓN PARA RENDERIZAR GRILLA ---
+    def mostrar_unidades(datos):
+        if not datos.empty:
+            # Filtro de buscador dentro de la categoría
             if busqueda:
-                mask = (dataframe['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
-                        dataframe['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
-                dataframe = dataframe[mask]
+                mask = (datos['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
+                        datos['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
+                datos = datos[mask]
 
-            if dataframe.empty:
+            if datos.empty:
                 st.info("No hay unidades que coincidan con la búsqueda.")
                 return
 
             cols = st.columns(3)
-            for i, (index, row) in enumerate(dataframe.iterrows()):
+            for i, (index, row) in enumerate(datos.iterrows()):
                 with cols[i % 3]:
                     st.image(row['Foto_URL'], use_container_width=True)
                     
@@ -83,23 +104,23 @@ try:
                     st.markdown(f"<h3 style='color: #004080;'>{precio_mostrar}</h3>", unsafe_allow_html=True)
                     st.markdown("---")
         else:
-            st.info("No hay unidades cargadas en esta categoría.")
+            st.info("No hay unidades en esta categoría.")
 
-    # --- APLICAMOS LAS PESTAÑAS ---
+    # --- PESTAÑAS 50/50 SIN ICONOS ---
+    tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
+
     with tab_autos:
-        # Filtramos por la primera columna (0) que contenga "Auto"
+        # Filtra la columna 1 (Categoría) buscando "Auto"
         df_autos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)]
-        renderizar_unidad(df_autos)
+        mostrar_unidades(df_autos)
 
     with tab_motos:
-        # Filtramos por la primera columna (0) que contenga "Moto"
+        # Filtra la columna 1 (Categoría) buscando "Moto"
         df_motos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)]
-        renderizar_unidad(df_motos)
+        mostrar_unidades(df_motos)
 
 except Exception as e:
-    st.error(f"Hubo un error al conectar con la base de datos: {e}")
-
-
+    st.error(f"Error: {e}")
 
 
 
