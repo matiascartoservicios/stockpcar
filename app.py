@@ -50,28 +50,21 @@ try:
                 # 1. Foto Principal
                 st.image(row['Foto_URL'], use_container_width=True)
                 
-                # 2. Galería Desplegable (Busca todas las columnas que empiecen con 'Foto')
+                # 2. Galería de Fotos
                 fotos_extra = []
-                # Recorremos todas las columnas del Excel buscando las que digan "Foto" seguido de algo
                 for col_name in row.index:
                     if col_name.startswith('Foto') and col_name != 'Foto_URL':
                         if pd.notna(row[col_name]) and str(row[col_name]).strip() != "":
                             fotos_extra.append(row[col_name])
                 
-                    if fotos_extra:
+                if fotos_extra:
                     with st.expander("📸 Ver más fotos"):
                         for url in fotos_extra:
                             st.image(url, use_container_width=True)
                         
-                        # BOTÓN PARA VOLVER ARRIBA
-                        # Este link vacío "#" hace que el navegador suba
-                        st.markdown("""
-                            <a href="#stock-disponible" style="text-decoration:none;">
-                                <div style="background-color:#004080; color:white; padding:10px; text-align:center; border-radius:5px; font-weight:bold; margin-top:10px;">
-                                    ▲ VOLVER ARRIBA Y CERRAR
-                                </div>
-                            </a>
-                        """, unsafe_allow_html=True)
+                        # BOTÓN SIMPLE PARA VOLVER AL INICIO
+                        if st.button("⬆️ Volver al Inicio", key=f"btn_{index}"):
+                            st.rerun() # Esto refresca la página y cierra todos los desplegables
                 
               # 3. Título y Datos
                 km_texto = str(row['KM']).replace('.0', '')
@@ -94,6 +87,7 @@ try:
         st.info("No hay unidades que coincidan con esa búsqueda. ¡Probá con otra!")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
