@@ -4,20 +4,6 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- UBICACIÓN DE LA AGENCIA (Debajo del logo y arriba de Stock) ---
-st.markdown(f"""
-    <div style='text-align: center; margin-top: -10px; margin-bottom: 25px;'>
-        <a href='https://maps.google.com/?cid=1158533433268707757&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl' target='_blank' style='text-decoration: none;'>
-            <div style='display: inline-block; background-color: #f0f2f6; padding: 10px 20px; border-radius: 10px; border: 1px solid #004080;'>
-                <span style='color: #004080; font-weight: bold; font-size: 16px;'>
-                    📍 V. Tedín 44, Benavídez
-                </span>
-                <br>
-                <span style='color: #555; font-size: 14px;'>Ver cómo llegar en Google Maps</span>
-            </div>
-        </a>
-    </div>
-""", unsafe_allow_html=True)
 
 # 2. LOGO DE LA AGENCIA
 URL_DE_TU_LOGO = 'https://i.postimg.cc/Cx1wcv1f/PCARA-Mesa-de-trabajo-1.png' 
@@ -29,6 +15,21 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.markdown("---")
+
+# --- UBICACIÓN DE LA AGENCIA (Debajo del logo y arriba de Stock) ---
+st.markdown(f"""
+    <div style='text-align: center; margin-top: -10px; margin-bottom: 25px;'>
+        <a href='https://maps.google.com/?cid=1158533433268707757&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl' target='_blank' style='text-decoration: none;'>
+            <div style='display: inline-block; background-color: #f0f2f6; padding: 10px 20px; border-radius: 10px; border: 1px solid #004080;'>
+                <span style='color: #004080; font-weight: bold; font-size: 16px;'>
+                    📍 PCAR AUTOS
+                </span>
+                <br>
+                <span style='color: #555; font-size: 14px;'>VISITANOS!!</span>
+            </div>
+        </a>
+    </div>
+""", unsafe_allow_html=True)
 
 # 3. Conexión con Google Sheets
 SHEET_ID = '1TnIRP4doFAJk5u2lB6qGwqNJHPY4LNXWdx8KQaHWrSc'
@@ -98,6 +99,7 @@ try:
         st.info("No hay unidades que coincidan con esa búsqueda. ¡Probá con otra!")
 except Exception as e:
     st.error(f"Hubo un error al conectar con la base de datos: {e}")
+
 
 
 
