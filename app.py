@@ -39,17 +39,32 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# 3. UBICACIÓN
-st.markdown(f"""
-    <div style='text-align: center; margin-top: -10px; margin-bottom: 25px;'>
+# 3. --- BOTONES DE CONTACTO (Ubicación y WhatsApp 50/50) ---
+col_ubi, col_wa = st.columns(2)
+
+with col_ubi:
+    st.markdown(f"""
         <a href='https://maps.google.com/?cid=1158533433268707757&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNl' target='_blank' style='text-decoration: none;'>
-            <div style='display: inline-block; background-color: #f0f2f6; padding: 10px 20px; border-radius: 10px; border: 1px solid #004080;'>
-                <span style='color: #004080; font-weight: bold; font-size: 16px;'>📍 PCAR AUTOS</span><br>
-                <span style='color: #555; font-size: 14px;'>VISITANOS!!</span>
+            <div style='background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px;'>
+                <span style='color: #004080; font-weight: bold; font-size: 18px;'>📍 UBICACIÓN</span><br>
+                <span style='color: #555; font-size: 13px;'>VISITANOS!!</span>
             </div>
         </a>
-    </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+with col_wa:
+    # Reemplaza el número con el de tu jefe (con código de área, ej: 54911...)
+    NUMERO_WA = "5491122334455" 
+    st.markdown(f"""
+        <a href='https://wa.me/{NUMERO_WA}?text=Hola!%20Vengo%20desde%20el%20catálogo%20PCAR' target='_blank' style='text-decoration: none;'>
+            <div style='background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 80px;'>
+                <span style='color: white; font-weight: bold; font-size: 18px;'>💬 WHATSAPP</span><br>
+                <span style='color: white; font-size: 13px;'>CONSULTANOS!!</span>
+            </div>
+        </a>
+    """, unsafe_allow_html=True)
+
+st.markdown("---")
 
 # 4. Conexión con Google Sheets
 SHEET_ID = '1TnIRP4doFAJk5u2lB6qGwqNJHPY4LNXWdx8KQaHWrSc'
@@ -121,6 +136,7 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
 
