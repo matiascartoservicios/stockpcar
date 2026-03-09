@@ -4,7 +4,7 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- ESTILO CSS PARA PESTAÑAS 50/50 Y CENTRADAS ---
+# --- ESTILO CSS PARA PESTAÑAS 50/50, CENTRADAS Y CARRUSEL ---
 st.markdown("""
     <style>
     /* Estira las pestañas para que ocupen el 50% cada una */
@@ -25,6 +25,27 @@ st.markdown("""
         font-size: 18px !important;
         font-weight: bold !important;
     }
+    
+    /* Estilo del Carrusel Deslizable */
+    .carrusel-contenedor {
+        display: flex;
+        overflow-x: auto;
+        gap: 8px;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px;
+        scrollbar-width: none; /* Oculta scroll en Firefox */
+    }
+    .carrusel-contenedor::-webkit-scrollbar {
+        display: none; /* Oculta scroll en Chrome/Safari */
+    }
+    .carrusel-img {
+        flex: 0 0 95%; /* La foto ocupa casi todo el ancho de la columna */
+        scroll-snap-align: center;
+        border-radius: 10px;
+        height: 200px; /* Ajuste para que quepa bien en la grilla de 3 */
+        object-fit: cover;
+        background-color: #f0f2f6;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -39,8 +60,7 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# 3. --- BOTONES DE CONTACTO (Ubicación y WhatsApp 50/50 REALES) ---
-# Cambiá el número acá
+# 3. --- BOTONES DE CONTACTO ---
 NUMERO_WA = "+5491164977257" 
 
 st.markdown(f"""
@@ -79,10 +99,27 @@ try:
     st.markdown(f"<h2 style='color: #004080; margin-bottom: -10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
     busqueda = st.text_input("", placeholder="🔍 Escribí Marca o Modelo...").strip().lower()
 
+    # --- FUNCIÓN PARA RENDERIZAR EL CARRUSEL ---
+    def generar_carrusel_html(fotos):
+        # Filtramos fotos vacías o nulas
+        fotos_validas = [f for f in fotos if pd.notna(f) and str(f).strip().startswith('http')]
+        
+        if not fotos_validas:
+            return "<p style='color: gray;'>Sin fotos disponibles</p>"
+        
+        # Generamos el contenedor con scroll horizontal
+        img_tags = "".join([f'<img src="{f}" class="carrusel-img">' for f in fotos_validas])
+        html = f"""
+        <div class="carrusel-contenedor">
+            {img_tags}
+        </div>
+        <p style="text-align: center; color: #888; font-size: 10px; margin-top: -5px;">⇠ Deslizá para ver más ⇢</p>
+        """
+        return html
+
     # --- FUNCIÓN PARA RENDERIZAR GRILLA ---
     def mostrar_unidades(datos):
         if not datos.empty:
-            # Filtro de buscador dentro de la categoría
             if busqueda:
                 mask = (datos['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
                         datos['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
@@ -95,14 +132,11 @@ try:
             cols = st.columns(3)
             for i, (index, row) in enumerate(datos.iterrows()):
                 with cols[i % 3]:
-                    st.image(row['Foto_URL'], use_container_width=True)
+                    # Recopilamos todas las fotos de las columnas (Foto_URL, Foto1, Foto2, etc.)
+                    todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
                     
-                    # Galería
-                    fotos_extra = [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL' and pd.notna(row[c]) and str(row[c]).strip() != ""]
-                    if fotos_extra:
-                        with st.expander("📸 Ver más fotos"):
-                            for f in fotos_extra:
-                                st.image(f, use_container_width=True)
+                    # Mostramos el carrusel en lugar de una sola imagen
+                    st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
                     
                     st.subheader(f"{row['Marca']} {row['Modelo']}")
                     km_texto = str(row['KM']).replace('.0', '')
@@ -117,23 +151,19 @@ try:
         else:
             st.info("No hay unidades en esta categoría.")
 
-    # --- PESTAÑAS 50/50 SIN ICONOS ---
+    # --- PESTAÑAS 50/50 ---
     tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
 
     with tab_autos:
-        # Filtra la columna 1 (Categoría) buscando "Auto"
         df_autos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)]
         mostrar_unidades(df_autos)
 
     with tab_motos:
-        # Filtra la columna 1 (Categoría) buscando "Moto"
         df_motos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)]
         mostrar_unidades(df_motos)
 
 except Exception as e:
     st.error(f"Error: {e}")
-
-
 
 
 
