@@ -4,7 +4,7 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- ESTILO CSS PARA PESTAÑAS 50/50, CENTRADAS Y CARRUSEL ---
+# --- ESTILO CSS ACTUALIZADO PARA CARRUSEL MÁS GRANDE ---
 st.markdown("""
     <style>
     /* Estira las pestañas para que ocupen el 50% cada una */
@@ -26,25 +26,26 @@ st.markdown("""
         font-weight: bold !important;
     }
     
-    /* Estilo del Carrusel Deslizable */
+    /* Estilo del Carrusel Deslizable ACTUALIZADO */
     .carrusel-contenedor {
         display: flex;
         overflow-x: auto;
-        gap: 8px;
+        gap: 10px; /* Un poquito más de separación */
         scroll-snap-type: x mandatory;
-        padding-bottom: 10px;
+        padding-bottom: 15px; /* Más espacio abajo para el texto de ayuda */
         scrollbar-width: none; /* Oculta scroll en Firefox */
     }
     .carrusel-contenedor::-webkit-scrollbar {
         display: none; /* Oculta scroll en Chrome/Safari */
     }
     .carrusel-img {
-        flex: 0 0 95%; /* La foto ocupa casi todo el ancho de la columna */
+        flex: 0 0 100%; /* La foto ocupa TODO el ancho de la columna para que se vea bien grande */
         scroll-snap-align: center;
-        border-radius: 10px;
-        height: 200px; /* Ajuste para que quepa bien en la grilla de 3 */
-        object-fit: cover;
+        border-radius: 12px; /* Bordes un poco más redondeados */
+        height: 320px; /* <--- ACÁ ESTÁ EL CAMBIO IMPORTANTE: MÁS ALTURA */
+        object-fit: cover; /* Recorta la foto para que llene el espacio sin deformarse */
         background-color: #f0f2f6;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.1); /* Una sombrita suave para que flote */
     }
     </style>
 """, unsafe_allow_html=True)
@@ -164,6 +165,7 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
 
