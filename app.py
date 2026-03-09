@@ -11,7 +11,7 @@ st.markdown("""
     div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
         position: sticky;
         top: 100px;
-        z-index: 500;
+        z-index: 750;
         background-color: white;
         padding: 0px 0px !important; /* Caja bien petisa */
         margin: 0px !important;
@@ -137,6 +137,7 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
 
