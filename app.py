@@ -10,7 +10,7 @@ st.markdown("""
     /* 1. Forza que el contenedor del buscador sea STICKY y fino */
     [data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
         position: sticky !important;
-        top: 100px !important;
+        top: 50px !important;
         z-index: 750 !important;
         background-color: white !important;
         padding-top: 5px !important;
@@ -150,4 +150,5 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
