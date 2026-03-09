@@ -10,10 +10,10 @@ st.markdown("""
     /* 1. Hacemos que la caja del buscador sea finita y pegada arriba */
     div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
         position: sticky;
-        top: 10px;
+        top: 50px;
         z-index: 1000;
         background-color: white;
-        padding: 2px 0px !important; /* Caja bien petisa */
+        padding: 0px 0px !important; /* Caja bien petisa */
         margin: 0px !important;
     }
 
@@ -137,4 +137,5 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
