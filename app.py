@@ -4,33 +4,28 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- CSS DEFINITIVO: CAJA FINA, STICKY Y BUSCADOR CENTRADO ---
+# --- CSS DEFINITIVO: STICKY FUNCIONAL, CAJA FINA Y AYUDA CARRUSEL ---
 st.markdown("""
     <style>
-    /* 1. Hacemos que la caja del buscador sea finita y pegada arriba */
-    div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
-        position: sticky;
-        top: 0px;
-        z-index: 999;
-        background-color: white;
-        padding: 5px 0px !important;
-        margin: 0px !important;
+    /* 1. Forza que el contenedor del buscador sea STICKY y fino */
+    [data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
+        position: sticky !important;
+        top: 0px !important;
+        z-index: 999 !important;
+        background-color: white !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        margin-top: 0px !important;
     }
 
-    /* Ocultamos el label (título) del buscador para ganar espacio */
+    /* Ocultamos el label (título) para que no ocupe espacio arriba */
     div[data-testid="stTextInput"] label {
         display: none !important;
     }
 
-    /* Quitamos los espacios internos que Streamlit pone por defecto */
+    /* Ajuste de margen para que el input no tenga aire extra */
     div[data-testid="stTextInput"] > div {
-        margin-top: -15px !important; /* Elimina el aire de arriba */
-        margin-bottom: -5px !important; /* Elimina el aire de abajo */
-    }
-    
-    /* Ajuste de altura del input para que sea más estilizado */
-    div[data-baseweb="input"] {
-        height: 45px !important;
+        margin-top: -10px !important;
     }
     
     /* Estilo de las pestañas 50/50 */
@@ -81,7 +76,7 @@ st.markdown("---")
 NUMERO_WA = "+5491164977257" 
 st.markdown(f"""
     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-        <a href="https://maps.app.goo.gl/YourMapLink" target="_blank" style="text-decoration: none; width: 50%;">
+        <a href="https://www.google.com/maps" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
                 <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN</span>
             </div>
@@ -99,7 +94,7 @@ st.markdown("---")
 # 4. TÍTULO Y LUEGO BUSCADOR
 st.markdown(f"<h2 style='color: #004080; margin-bottom: 10px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
 
-# El buscador ahora está debajo del título y pegado
+# Buscador Sticky
 busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
 
 # 5. LÓGICA DE DATOS
@@ -114,7 +109,13 @@ try:
         fotos_validas = [f for f in fotos if pd.notna(f) and str(f).strip().startswith('http')]
         if not fotos_validas: return "<p style='text-align:center; color:gray;'>Sin fotos</p>"
         img_tags = "".join([f'<img src="{f}" class="carrusel-img">' for f in fotos_validas])
-        return f'<div class="carrusel-contenedor">{img_tags}</div>'
+        html = f"""
+        <div class="carrusel-contenedor">
+            {img_tags}
+        </div>
+        <p style="text-align: center; color: #888; font-size: 10px; margin-top: -5px;">⇠ Deslizá para ver más ⇢</p>
+        """
+        return html
 
     def mostrar_unidades(datos):
         if not datos.empty:
@@ -138,7 +139,7 @@ try:
                     st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
                     st.markdown("---")
         else:
-            st.info("No hay unidades disponibles en esta categoría.")
+            st.info("No hay unidades disponibles.")
 
     # 6. PESTAÑAS
     tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
@@ -148,5 +149,4 @@ try:
         mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)])
 
 except Exception as e:
-    st.error(f"Error al cargar los datos: {e}")
-
+    st.error(f"Error: {e}")
