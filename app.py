@@ -4,16 +4,18 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- ESTILO CSS ACTUALIZADO: BUSCADOR STICKY, CARRUSEL Y PESTAÑAS ---
+# --- ESTILO CSS CORREGIDO: BUSCADOR STICKY SIN CORTARSE ---
 st.markdown("""
     <style>
-    /* Buscador Sticky (se queda arriba al hacer scroll) */
-    div[data-testid="stForm"], div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
+    /* Buscador Sticky con margen para que no se esconda arriba */
+    div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
         position: sticky;
-        top: 0;
+        top: 10px; /* Le damos aire arriba para que no se tape */
         z-index: 1000;
         background-color: white;
-        padding: 10px 0px;
+        padding: 15px 5px;
+        border-radius: 15px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.05); /* Sombra suave para que se note que flota */
     }
     
     /* Estira las pestañas para que ocupen el 50% cada una */
@@ -68,9 +70,9 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# 3. --- BUSCADOR PRINCIPAL (Sticky y Ancho Completo) ---
-# Lo ponemos arriba de los botones para que sea lo primero que se fije al scrollear
-busqueda = st.text_input("¿Qué estás buscando?", placeholder="🔍 Ej: Hilux, Fiat Toro, BMW...").strip().lower()
+# 3. --- BUSCADOR PRINCIPAL (Texto corregido) ---
+# Cambié el label a vacío y puse tu texto directamente en el placeholder (al lado de la lupa)
+busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
 
 st.markdown("---")
 
@@ -126,7 +128,6 @@ try:
     # --- FUNCIÓN PARA RENDERIZAR GRILLA ---
     def mostrar_unidades(datos):
         if not datos.empty:
-            # El filtro de búsqueda ahora aplica aquí globalmente
             if busqueda:
                 mask = (datos['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
                         datos['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
@@ -171,6 +172,7 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
 
