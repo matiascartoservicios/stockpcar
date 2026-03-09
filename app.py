@@ -4,20 +4,25 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- ESTILO CSS CORREGIDO: BUSCADOR STICKY SIN CORTARSE ---
+# --- ESTILO CSS CORREGIDO: BUSCADOR MÁS FINO Y CENTRADO ---
 st.markdown("""
     <style>
-    /* Buscador Sticky con margen para que no se esconda arriba */
+    /* Contenedor del Buscador: Más petiso y centrado */
     div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
         position: sticky;
-        top: 10px; /* Le damos aire arriba para que no se tape */
+        top: 0px; 
         z-index: 1000;
         background-color: white;
-        padding: 15px 5px;
-        border-radius: 15px;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.05); /* Sombra suave para que se note que flota */
+        padding: 5px 0px; /* Reduje el padding para que no sea tan alto */
+        margin-top: -10px;
     }
     
+    /* Elimina el espacio extra que Streamlit le pone arriba al input */
+    div[data-testid="stTextInput"] {
+        padding-top: 0px !important;
+        margin-top: 0px !important;
+    }
+
     /* Estira las pestañas para que ocupen el 50% cada una */
     div[data-baseweb="tab-list"] {
         width: 100% !important;
@@ -70,8 +75,8 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# 3. --- BUSCADOR PRINCIPAL (Texto corregido) ---
-# Cambié el label a vacío y puse tu texto directamente en el placeholder (al lado de la lupa)
+# 3. --- BUSCADOR PRINCIPAL ---
+# label="" para que no ocupe espacio arriba
 busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
 
 st.markdown("---")
@@ -140,18 +145,13 @@ try:
             cols = st.columns(3)
             for i, (index, row) in enumerate(datos.iterrows()):
                 with cols[i % 3]:
-                    # Recopilamos todas las fotos
                     todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
-                    
                     st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
-                    
                     st.subheader(f"{row['Marca']} {row['Modelo']}")
                     km_texto = str(row['KM']).replace('.0', '')
                     st.write(f"Año: {row['Año']} | KM: {km_texto}")
-                    
                     if 'Motor' in row and pd.notna(row['Motor']) and str(row['Motor']).strip() != "":
                         st.write(str(row['Motor']))
-                    
                     precio_mostrar = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
                     st.markdown(f"<h3 style='color: #004080;'>{precio_mostrar}</h3>", unsafe_allow_html=True)
                     st.markdown("---")
@@ -172,14 +172,3 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
-
-
-
-
-
-
-
-
-
-
-
