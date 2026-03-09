@@ -4,56 +4,51 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- ESTILO CSS CORREGIDO: BUSCADOR MÁS FINO Y CENTRADO ---
+# --- CSS DEFINITIVO: CAJA FINA, STICKY Y BUSCADOR CENTRADO ---
 st.markdown("""
     <style>
-    /* Contenedor del Buscador: Más petiso y centrado */
+    /* 1. Hacemos que la caja del buscador sea finita y pegada arriba */
     div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
         position: sticky;
-        top: 0px; 
+        top: 0px;
         z-index: 1000;
         background-color: white;
-        padding: 5px 0px; /* Reduje el padding para que no sea tan alto */
-        margin-top: -10px;
-    }
-    
-    /* Elimina el espacio extra que Streamlit le pone arriba al input */
-    div[data-testid="stTextInput"] {
-        padding-top: 0px !important;
-        margin-top: 0px !important;
+        padding: 5px 0px !important; /* Caja bien petisa */
+        margin: 0px !important;
     }
 
-    /* Estira las pestañas para que ocupen el 50% cada una */
+    /* 2. Quitamos espacios extra que Streamlit pone por defecto al input */
+    div[data-testid="stTextInput"] > div {
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+    
+    /* 3. Estilo de las pestañas 50/50 */
     div[data-baseweb="tab-list"] {
         width: 100% !important;
         display: flex !important;
         justify-content: center !important;
-        gap: 0px !important;
     }
     button[data-baseweb="tab"] {
         width: 50% !important;
         flex-grow: 1 !important;
-        text-align: center !important;
         height: 50px !important;
     }
-    /* Estilo del texto en pestañas */
     div[data-testid="stMarkdownContainer"] p {
         font-size: 18px !important;
         font-weight: bold !important;
     }
     
-    /* Estilo del Carrusel Deslizable */
+    /* 4. Carrusel de fotos */
     .carrusel-contenedor {
         display: flex;
         overflow-x: auto;
         gap: 10px;
         scroll-snap-type: x mandatory;
-        padding-bottom: 15px;
+        padding-bottom: 10px;
         scrollbar-width: none;
     }
-    .carrusel-contenedor::-webkit-scrollbar {
-        display: none;
-    }
+    .carrusel-contenedor::-webkit-scrollbar { display: none; }
     .carrusel-img {
         flex: 0 0 100%;
         scroll-snap-align: center;
@@ -66,80 +61,60 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 2. LOGO DE LA AGENCIA
+# 2. LOGO
 URL_DE_TU_LOGO = 'https://i.postimg.cc/Cx1wcv1f/PCARA-Mesa-de-trabajo-1.png' 
+st.markdown(f"<div style='text-align: center;'><img src='{URL_DE_TU_LOGO}' width='400'></div>", unsafe_allow_html=True)
 
+st.markdown("---")
+
+# 3. BOTONES DE CONTACTO
+NUMERO_WA = "+5491164977257" 
 st.markdown(f"""
-    <div style='text-align: center;'>
-        <img src='{URL_DE_TU_LOGO}' width='400' style='margin-bottom: 20px;'>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+        <a href="http://maps.google.com" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN</span>
+            </div>
+        </a>
+        <a href="https://wa.me/{NUMERO_WA}" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP</span>
+            </div>
+        </a>
     </div>
 """, unsafe_allow_html=True)
 
-# 3. --- BUSCADOR PRINCIPAL ---
-# label="" para que no ocupe espacio arriba
+st.markdown("---")
+
+# 4. TÍTULO Y LUEGO BUSCADOR (Ubicación corregida)
+st.markdown(f"<h2 style='color: #004080; margin-bottom: 5px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
+
+# El buscador ahora está debajo del título
 busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
 
-st.markdown("---")
-
-# 4. --- BOTONES DE CONTACTO ---
-NUMERO_WA = "+5491164977257" 
-
-st.markdown(f"""
-    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 25px;">
-        <a href="https://maps.google.com" target="_blank" style="text-decoration: none; width: 50%;">
-            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;">
-                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN</span>
-                <span style="color: #555; font-size: 12px;">VISITANOS!!</span>
-            </div>
-        </a>
-        <a href="https://wa.me/{NUMERO_WA}?text=Hola!%20Vengo%20desde%20el%20catálogo%20PCAR" target="_blank" style="text-decoration: none; width: 50%;">
-            <div style="background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;">
-                <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP</span>
-                <span style="color: white; font-size: 12px;">CONSULTANOS!!</span>
-            </div>
-        </a>
-    </div>
-""", unsafe_allow_html=True)
-
-st.markdown("---")
-
-# 5. Conexión con Google Sheets
+# 5. LÓGICA DE DATOS
 SHEET_ID = '1TnIRP4doFAJk5u2lB6qGwqNJHPY4LNXWdx8KQaHWrSc'
 url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
 
 try:
     df = pd.read_csv(url)
+    df_mostrar = df[df['Estado'] == 'Disponible'] if 'Estado' in df.columns else df
 
-    if 'Estado' in df.columns:
-        df_mostrar = df[df['Estado'] == 'Disponible']
-    else:
-        df_mostrar = df
-
-    # --- FUNCIÓN PARA RENDERIZAR EL CARRUSEL ---
     def generar_carrusel_html(fotos):
         fotos_validas = [f for f in fotos if pd.notna(f) and str(f).strip().startswith('http')]
-        if not fotos_validas:
-            return "<p style='color: gray;'>Sin fotos disponibles</p>"
-        
+        if not fotos_validas: return "<p>Sin fotos</p>"
         img_tags = "".join([f'<img src="{f}" class="carrusel-img">' for f in fotos_validas])
-        html = f"""
-        <div class="carrusel-contenedor">
-            {img_tags}
-        </div>
-        <p style="text-align: center; color: #888; font-size: 10px; margin-top: -5px;">⇠ Deslizá para ver más ⇢</p>
-        """
-        return html
+        return f'<div class="carrusel-contenedor">{img_tags}</div>'
 
-    # --- FUNCIÓN PARA RENDERIZAR GRILLA ---
     def mostrar_unidades(datos):
         if not datos.empty:
             if busqueda:
                 mask = (datos['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
                         datos['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
                 datos = datos[mask]
-
+            
             if datos.empty:
-                st.info("No hay unidades que coincidan con la búsqueda.")
+                st.info("No hay unidades.")
                 return
 
             cols = st.columns(3)
@@ -148,27 +123,17 @@ try:
                     todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
                     st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
                     st.subheader(f"{row['Marca']} {row['Modelo']}")
-                    km_texto = str(row['KM']).replace('.0', '')
-                    st.write(f"Año: {row['Año']} | KM: {km_texto}")
-                    if 'Motor' in row and pd.notna(row['Motor']) and str(row['Motor']).strip() != "":
-                        st.write(str(row['Motor']))
-                    precio_mostrar = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
-                    st.markdown(f"<h3 style='color: #004080;'>{precio_mostrar}</h3>", unsafe_allow_html=True)
+                    st.write(f"Año: {row['Año']} | KM: {str(row['KM']).replace('.0', '')}")
+                    precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
+                    st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
                     st.markdown("---")
-        else:
-            st.info("No hay unidades en esta categoría.")
 
-    # --- PESTAÑAS 50/50 ---
-    st.markdown(f"<h2 style='color: #004080; margin-top: 10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
+    # 6. PESTAÑAS
     tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
-
     with tab_autos:
-        df_autos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)]
-        mostrar_unidades(df_autos)
-
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)])
     with tab_motos:
-        df_motos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)]
-        mostrar_unidades(df_motos)
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)])
 
 except Exception as e:
     st.error(f"Error: {e}")
