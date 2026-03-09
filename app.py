@@ -128,4 +128,25 @@ try:
                 return
 
             cols = st.columns(3)
-            for i, (index, row) in enumerate(
+            for i, (index, row) in enumerate(datos.iterrows()):
+                with cols[i % 3]:
+                    todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
+                    st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
+                    st.subheader(f"{row['Marca']} {row['Modelo']}")
+                    st.write(f"Año: {row['Año']} | KM: {str(row['KM']).replace('.0', '')}")
+                    precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
+                    st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
+                    st.markdown("---")
+        else:
+            st.info("No hay unidades disponibles en esta categoría.")
+
+    # 6. PESTAÑAS
+    tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
+    with tab_autos:
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)])
+    with tab_motos:
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)])
+
+except Exception as e:
+    st.error(f"Error al cargar los datos: {e}")
+
