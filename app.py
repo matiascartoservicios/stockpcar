@@ -68,8 +68,109 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# 3. --- BUSCADOR PRINCIPAL (Sticky y
+# 3. --- BUSCADOR PRINCIPAL (Sticky y Ancho Completo) ---
+# Lo ponemos arriba de los botones para que sea lo primero que se fije al scrollear
+busqueda = st.text_input("¿Qué estás buscando?", placeholder="🔍 Ej: Hilux, Fiat Toro, BMW...").strip().lower()
 
+st.markdown("---")
+
+# 4. --- BOTONES DE CONTACTO ---
+NUMERO_WA = "+5491164977257" 
+
+st.markdown(f"""
+    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 25px;">
+        <a href="https://maps.google.com" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN</span>
+                <span style="color: #555; font-size: 12px;">VISITANOS!!</span>
+            </div>
+        </a>
+        <a href="https://wa.me/{NUMERO_WA}?text=Hola!%20Vengo%20desde%20el%20catálogo%20PCAR" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 85px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP</span>
+                <span style="color: white; font-size: 12px;">CONSULTANOS!!</span>
+            </div>
+        </a>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# 5. Conexión con Google Sheets
+SHEET_ID = '1TnIRP4doFAJk5u2lB6qGwqNJHPY4LNXWdx8KQaHWrSc'
+url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
+
+try:
+    df = pd.read_csv(url)
+
+    if 'Estado' in df.columns:
+        df_mostrar = df[df['Estado'] == 'Disponible']
+    else:
+        df_mostrar = df
+
+    # --- FUNCIÓN PARA RENDERIZAR EL CARRUSEL ---
+    def generar_carrusel_html(fotos):
+        fotos_validas = [f for f in fotos if pd.notna(f) and str(f).strip().startswith('http')]
+        if not fotos_validas:
+            return "<p style='color: gray;'>Sin fotos disponibles</p>"
+        
+        img_tags = "".join([f'<img src="{f}" class="carrusel-img">' for f in fotos_validas])
+        html = f"""
+        <div class="carrusel-contenedor">
+            {img_tags}
+        </div>
+        <p style="text-align: center; color: #888; font-size: 10px; margin-top: -5px;">⇠ Deslizá para ver más ⇢</p>
+        """
+        return html
+
+    # --- FUNCIÓN PARA RENDERIZAR GRILLA ---
+    def mostrar_unidades(datos):
+        if not datos.empty:
+            # El filtro de búsqueda ahora aplica aquí globalmente
+            if busqueda:
+                mask = (datos['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
+                        datos['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
+                datos = datos[mask]
+
+            if datos.empty:
+                st.info("No hay unidades que coincidan con la búsqueda.")
+                return
+
+            cols = st.columns(3)
+            for i, (index, row) in enumerate(datos.iterrows()):
+                with cols[i % 3]:
+                    # Recopilamos todas las fotos
+                    todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
+                    
+                    st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
+                    
+                    st.subheader(f"{row['Marca']} {row['Modelo']}")
+                    km_texto = str(row['KM']).replace('.0', '')
+                    st.write(f"Año: {row['Año']} | KM: {km_texto}")
+                    
+                    if 'Motor' in row and pd.notna(row['Motor']) and str(row['Motor']).strip() != "":
+                        st.write(str(row['Motor']))
+                    
+                    precio_mostrar = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
+                    st.markdown(f"<h3 style='color: #004080;'>{precio_mostrar}</h3>", unsafe_allow_html=True)
+                    st.markdown("---")
+        else:
+            st.info("No hay unidades en esta categoría.")
+
+    # --- PESTAÑAS 50/50 ---
+    st.markdown(f"<h2 style='color: #004080; margin-top: 10px;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
+    tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
+
+    with tab_autos:
+        df_autos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)]
+        mostrar_unidades(df_autos)
+
+    with tab_motos:
+        df_motos = df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)]
+        mostrar_unidades(df_motos)
+
+except Exception as e:
+    st.error(f"Error: {e}")
 
 
 
