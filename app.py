@@ -10,20 +10,30 @@ st.markdown("""
     /* 1. Hacemos que la caja del buscador sea finita y pegada arriba */
     div[data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
         position: sticky;
-        top: 75px;
-        z-index: 800;
+        top: 0px;
+        z-index: 999;
         background-color: white;
-        padding: 0px 0px !important; /* Caja bien petisa */
+        padding: 5px 0px !important;
         margin: 0px !important;
     }
 
-    /* 2. Quitamos espacios extra que Streamlit pone por defecto al input */
+    /* Ocultamos el label (título) del buscador para ganar espacio */
+    div[data-testid="stTextInput"] label {
+        display: none !important;
+    }
+
+    /* Quitamos los espacios internos que Streamlit pone por defecto */
     div[data-testid="stTextInput"] > div {
-        padding: 0px !important;
-        margin: 0px !important;
+        margin-top: -15px !important; /* Elimina el aire de arriba */
+        margin-bottom: -5px !important; /* Elimina el aire de abajo */
     }
     
-    /* 3. Estilo de las pestañas 50/50 */
+    /* Ajuste de altura del input para que sea más estilizado */
+    div[data-baseweb="input"] {
+        height: 45px !important;
+    }
+    
+    /* Estilo de las pestañas 50/50 */
     div[data-baseweb="tab-list"] {
         width: 100% !important;
         display: flex !important;
@@ -39,7 +49,7 @@ st.markdown("""
         font-weight: bold !important;
     }
     
-    /* 4. Carrusel de fotos */
+    /* Carrusel de fotos */
     .carrusel-contenedor {
         display: flex;
         overflow-x: auto;
@@ -71,7 +81,7 @@ st.markdown("---")
 NUMERO_WA = "+5491164977257" 
 st.markdown(f"""
     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-        <a href="http://maps.google.com" target="_blank" style="text-decoration: none; width: 50%;">
+        <a href="https://maps.app.goo.gl/YourMapLink" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
                 <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN</span>
             </div>
@@ -86,10 +96,10 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# 4. TÍTULO Y LUEGO BUSCADOR (Ubicación corregida)
-st.markdown(f"<h2 style='color: #004080; margin-bottom: 5px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
+# 4. TÍTULO Y LUEGO BUSCADOR
+st.markdown(f"<h2 style='color: #004080; margin-bottom: 10px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
 
-# El buscador ahora está debajo del título
+# El buscador ahora está debajo del título y pegado
 busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
 
 # 5. LÓGICA DE DATOS
@@ -102,7 +112,7 @@ try:
 
     def generar_carrusel_html(fotos):
         fotos_validas = [f for f in fotos if pd.notna(f) and str(f).strip().startswith('http')]
-        if not fotos_validas: return "<p>Sin fotos</p>"
+        if not fotos_validas: return "<p style='text-align:center; color:gray;'>Sin fotos</p>"
         img_tags = "".join([f'<img src="{f}" class="carrusel-img">' for f in fotos_validas])
         return f'<div class="carrusel-contenedor">{img_tags}</div>'
 
@@ -114,31 +124,8 @@ try:
                 datos = datos[mask]
             
             if datos.empty:
-                st.info("No hay unidades.")
+                st.info("No hay unidades que coincidan con la búsqueda.")
                 return
 
             cols = st.columns(3)
-            for i, (index, row) in enumerate(datos.iterrows()):
-                with cols[i % 3]:
-                    todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
-                    st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
-                    st.subheader(f"{row['Marca']} {row['Modelo']}")
-                    st.write(f"Año: {row['Año']} | KM: {str(row['KM']).replace('.0', '')}")
-                    precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
-                    st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
-                    st.markdown("---")
-
-    # 6. PESTAÑAS
-    tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
-    with tab_autos:
-        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)])
-    with tab_motos:
-        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)])
-
-except Exception as e:
-    st.error(f"Error: {e}")
-
-
-
-
-
+            for i, (index, row) in enumerate(
