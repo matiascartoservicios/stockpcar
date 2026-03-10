@@ -107,4 +107,56 @@ try:
 
     def generar_carrusel_html(fotos):
         fotos_validas = [f for f in fotos if pd.notna(f) and str(f).strip().startswith('http')]
-        if not fotos_validas: return "<p style='text-align:
+        if not fotos_validas: return "<p style='text-align:center; color:gray;'>Sin fotos</p>"
+        img_tags = "".join([f'<img src="{f}" class="carrusel-img">' for f in fotos_validas])
+        html = f"""
+        <div class="carrusel-contenedor">
+            {img_tags}
+        </div>
+        <p style="text-align: center; color: #888; font-size: 10px; margin-top: -5px;">⇠ Deslizá para ver más ⇢</p>
+        """
+        return html
+
+    def mostrar_unidades(datos):
+        if not datos.empty:
+            if busqueda:
+                mask = (datos['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
+                        datos['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
+                datos = datos[mask]
+            
+            if datos.empty:
+                st.info("No hay unidades que coincidan con la búsqueda.")
+                return
+
+            cols = st.columns(3)
+            for i, (index, row) in enumerate(datos.iterrows()):
+                with cols[i % 3]:
+                    todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
+                    st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
+                    st.subheader(f"{row['Marca']} {row['Modelo']}")
+                    
+                    # Info básica
+                    st.write(f"Año: {row['Año']} | KM: {str(row['KM']).replace('.0', '')}")
+                    
+                    # --- AQUÍ ESTÁ EL CAMBIO: MOSTRAR COLUMNA MOTOR ---
+                    if 'MOTOR' in datos.columns and pd.notna(row['MOTOR']):
+                        st.write(f"⚙️ **{row['MOTOR']}**")
+                    elif 'Motor' in datos.columns and pd.notna(row['Motor']):
+                        st.write(f"⚙️ **{row['Motor']}**")
+                    # -------------------------------------------------
+
+                    precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
+                    st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
+                    st.markdown("---")
+        else:
+            st.info("No hay unidades disponibles.")
+
+    # 6. PESTAÑAS
+    tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
+    with tab_autos:
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)])
+    with tab_motos:
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)])
+
+except Exception as e:
+    st.error(f"Error: {e}")
