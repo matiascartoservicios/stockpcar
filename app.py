@@ -146,9 +146,9 @@ try:
 
                     # --- NUEVA COLUMNA: UBICACION ---
                     if 'UBICACION' in datos.columns and pd.notna(row['UBICACION']):
-                        st.markdown(f"📍 <span style='color: #d32f2f; font-weight: bold;'>{row['UBICACION']}</span>", unsafe_allow_html=True)
+                        st.markdown(f"📍 <span style='color: #004080; font-weight: bold;'>{row['UBICACION']}</span>", unsafe_allow_html=True)
                     elif 'Ubicacion' in datos.columns and pd.notna(row['Ubicacion']):
-                        st.markdown(f"📍 <span style='color: #d32f2f; font-weight: bold;'>{row['Ubicacion']}</span>", unsafe_allow_html=True)
+                        st.markdown(f"📍 <span style='color: #004080; font-weight: bold;'>{row['Ubicacion']}</span>", unsafe_allow_html=True)
                     # -------------------------------
 
                     precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
@@ -166,4 +166,5 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
