@@ -78,7 +78,7 @@ st.markdown(f"""
     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
         <a href="https://www.google.com/maps" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
-                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN</span>
+                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN GENERAL</span>
             </div>
         </a>
         <a href="https://wa.me/{NUMERO_WA}" target="_blank" style="text-decoration: none; width: 50%;">
@@ -138,12 +138,18 @@ try:
                     # Info básica
                     st.write(f"Año: {row['Año']} | KM: {str(row['KM']).replace('.0', '')}")
                     
-                    # --- AQUÍ ESTÁ EL CAMBIO: MOSTRAR COLUMNA MOTOR ---
+                    # Mostrar columna MOTOR
                     if 'MOTOR' in datos.columns and pd.notna(row['MOTOR']):
-                        st.write(f" **{row['MOTOR']}**")
+                        st.write(f"⚙️ {row['MOTOR']}")
                     elif 'Motor' in datos.columns and pd.notna(row['Motor']):
-                        st.write(f"**{row['Motor']}**")
-                    # -------------------------------------------------
+                        st.write(f"⚙️ {row['Motor']}")
+
+                    # --- NUEVA COLUMNA: UBICACION ---
+                    if 'UBICACION' in datos.columns and pd.notna(row['UBICACION']):
+                        st.markdown(f"📍 <span style='color: #d32f2f; font-weight: bold;'>{row['UBICACION']}</span>", unsafe_allow_html=True)
+                    elif 'Ubicacion' in datos.columns and pd.notna(row['Ubicacion']):
+                        st.markdown(f"📍 <span style='color: #d32f2f; font-weight: bold;'>{row['Ubicacion']}</span>", unsafe_allow_html=True)
+                    # -------------------------------
 
                     precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
                     st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
