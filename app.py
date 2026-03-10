@@ -140,9 +140,9 @@ try:
                     
                     # --- AQUÍ ESTÁ EL CAMBIO: MOSTRAR COLUMNA MOTOR ---
                     if 'MOTOR' in datos.columns and pd.notna(row['MOTOR']):
-                        st.write(f"⚙️ **{row['MOTOR']}**")
+                        st.write(f" **{row['MOTOR']}**")
                     elif 'Motor' in datos.columns and pd.notna(row['Motor']):
-                        st.write(f"⚙️ **{row['Motor']}**")
+                        st.write(f"**{row['Motor']}**")
                     # -------------------------------------------------
 
                     precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
@@ -160,3 +160,4 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
