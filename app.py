@@ -78,7 +78,7 @@ st.markdown(f"""
     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
         <a href="https://maps.app.goo.gl/QbNXhUTyTyd793Zq8" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
-                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN   VENÍ A VERNOS!!</span>
+                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN VISITANOS!!</span>
             </div>
         </a>
         <a href="https://wa.me/{NUMERO_WA}" target="_blank" style="text-decoration: none; width: 50%;">
@@ -166,6 +166,7 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
 
