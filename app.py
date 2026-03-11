@@ -76,14 +76,14 @@ st.markdown("---")
 NUMERO_WA = "+5491164977257" 
 st.markdown(f"""
     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-        <a href="https://www.google.com/maps" target="_blank" style="text-decoration: none; width: 50%;">
+        <a href="https://maps.app.goo.gl/QbNXhUTyTyd793Zq8" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
-                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN GENERAL</span>
+                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN VENÍ A VERNOS!!</span>
             </div>
         </a>
         <a href="https://wa.me/{NUMERO_WA}" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
-                <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP</span>
+                <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP CONSULTANOS!!</span>
             </div>
         </a>
     </div>
@@ -166,5 +166,6 @@ try:
 
 except Exception as e:
     st.error(f"Error: {e}")
+
 
 
