@@ -26,7 +26,6 @@ st.markdown("""
     .carrusel-contenedor::-webkit-scrollbar { display: none; }
     .carrusel-img { flex: 0 0 100%; scroll-snap-align: center; border-radius: 12px; height: 320px; object-fit: cover; background-color: #f0f2f6; box-shadow: 2px 2px 8px rgba(0,0,0,0.1); }
     
-    /* Estilo para la etiqueta de Oportunidad */
     .badge-oportunidad {
         background-color: #ff4b2b;
         color: white;
@@ -46,28 +45,41 @@ st.markdown(f"<div style='text-align: center;'><img src='{URL_DE_TU_LOGO}' width
 
 st.markdown("---")
 
-# 3. BOTONES DE CONTACTO Y OPORTUNIDADES
+# 3. BOTONES DE CONTACTO (VERSION CORREGIDA 50/50)
 NUMERO_WA = "+5491164977257" 
 
-# Botones principales
-col_ubi, col_wa = st.columns(2)
-with col_ubi:
-    st.markdown(f"""<a href="https://maps.app.goo.gl/QbNXhUTyTyd793Zq8" target="_blank" style="text-decoration: none;">
-        <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 70px; display: flex; align-items: center; justify-content: center;">
-            <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN VISITANOS!!</span>
-        </div></a>""", unsafe_allow_html=True)
-with col_wa:
-    st.markdown(f"""<a href="https://wa.me/{NUMERO_WA}" target="_blank" style="text-decoration: none;">
-        <div style="background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 70px; display: flex; align-items: center; justify-content: center;">
-            <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP CONSULTANOS!!</span>
-        </div></a>""", unsafe_allow_html=True)
+# Mantenemos tu estructura original de HTML para que no se rompa el diseño
+st.markdown(f"""
+    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;">
+        <a href="https://maps.app.goo.gl/QbNXhUTyTyd793Zq8" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN VISITANOS!!</span>
+            </div>
+        </a>
+        <a href="https://wa.me/{NUMERO_WA}" target="_blank" style="text-decoration: none; width: 50%;">
+            <div style="background-color: #25D366; padding: 15px; border-radius: 10px; border: 1px solid #128C7E; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
+                <span style="color: white; font-weight: bold; font-size: 16px;">💬 WHATSAPP CONSULTANOS!!</span>
+            </div>
+        </a>
+    </div>
+""", unsafe_allow_html=True)
 
-# Botón de Oportunidades (Filtro rápido)
-ver_oportunidades = st.checkbox("🔥 VER OPORTUNIDADES Y LIQUIDACIONES 🔥")
+# Lógica del botón de Oportunidades
+if 'filtro_oportunidad' not academies_state:
+    st.session_state.filtro_oportunidad = False
+
+def toggle_oportunidad():
+    st.session_state.filtro_oportunidad = not st.session_state.filtro_oportunidad
+
+# Botón de Oportunidades (Ancho total)
+texto_boton = "❌ QUITAR FILTRO" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES Y LIQUIDACIONES 🔥"
+color_boton = "#555" if st.session_state.filtro_oportunidad else "#ff4b2b"
+
+st.button(texto_boton, on_click=toggle_oportunidad, use_container_width=True)
 
 st.markdown("---")
 
-# 4. TÍTULO Y BUSCADOR
+# 4. TÍTULO Y LUEGO BUSCADOR
 st.markdown(f"<h2 style='color: #004080; margin-bottom: 10px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
 busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
 
@@ -77,12 +89,10 @@ url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
 
 try:
     df = pd.read_csv(url)
-    
-    # Filtramos para mostrar solo Disponible u Oportunidad
     df_mostrar = df[df['Estado'].isin(['Disponible', 'Oportunidad'])] if 'Estado' in df.columns else df
 
-    # Si el usuario marcó el checkbox de Oportunidades, filtramos solo esas
-    if ver_oportunidades:
+    # Filtro activo por botón
+    if st.session_state.filtro_oportunidad:
         df_mostrar = df_mostrar[df_mostrar['Estado'] == 'Oportunidad']
 
     def generar_carrusel_html(fotos):
@@ -108,7 +118,6 @@ try:
                     todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
                     st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
                     st.subheader(f"{row['Marca']} {row['Modelo']}")
-                    
                     st.write(f"Año: {row['Año']} | KM: {str(row['KM']).replace('.0', '')}")
                     
                     if 'MOTOR' in datos.columns and pd.notna(row['MOTOR']):
@@ -117,7 +126,6 @@ try:
                     if 'UBICACION' in datos.columns and pd.notna(row['UBICACION']):
                         st.markdown(f"📍 <span style='color: #004080; font-weight: bold;'>{row['UBICACION']}</span>", unsafe_allow_html=True)
 
-                    # Badge de Oportunidad
                     if 'Estado' in row and row['Estado'] == 'Oportunidad':
                         st.markdown('<div class="badge-oportunidad">🔥 PRECIO DE LIQUIDACIÓN</div>', unsafe_allow_html=True)
 
@@ -125,9 +133,8 @@ try:
                     st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
                     st.markdown("---")
         else:
-            st.info("No hay unidades disponibles en esta categoría.")
+            st.info("No hay unidades en esta selección.")
 
-    # 6. PESTAÑAS
     tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
     with tab_autos:
         mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)])
