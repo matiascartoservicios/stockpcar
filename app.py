@@ -45,12 +45,11 @@ st.markdown(f"<div style='text-align: center;'><img src='{URL_DE_TU_LOGO}' width
 
 st.markdown("---")
 
-# 3. BOTONES DE CONTACTO (VERSION CORREGIDA 50/50)
+# 3. BOTONES DE CONTACTO (EL DISEÑO QUE TE GUSTA)
 NUMERO_WA = "+5491164977257" 
 
-# Mantenemos tu estructura original de HTML para que no se rompa el diseño
 st.markdown(f"""
-    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;">
+    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
         <a href="https://maps.app.goo.gl/QbNXhUTyTyd793Zq8" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
                 <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN VISITANOS!!</span>
@@ -64,22 +63,20 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Lógica del botón de Oportunidades
-if 'filtro_oportunidad' not academies_state:
+# --- LÓGICA DEL BOTÓN DE OPORTUNIDADES ---
+if 'filtro_oportunidad' not in st.session_state:
     st.session_state.filtro_oportunidad = False
 
 def toggle_oportunidad():
     st.session_state.filtro_oportunidad = not st.session_state.filtro_oportunidad
 
-# Botón de Oportunidades (Ancho total)
-texto_boton = "❌ QUITAR FILTRO" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES Y LIQUIDACIONES 🔥"
-color_boton = "#555" if st.session_state.filtro_oportunidad else "#ff4b2b"
-
+# El botón ahora usa todo el ancho y cambia de texto según el estado
+texto_boton = "❌ VER TODO EL STOCK" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES Y LIQUIDACIONES 🔥"
 st.button(texto_boton, on_click=toggle_oportunidad, use_container_width=True)
 
 st.markdown("---")
 
-# 4. TÍTULO Y LUEGO BUSCADOR
+# 4. TÍTULO Y BUSCADOR
 st.markdown(f"<h2 style='color: #004080; margin-bottom: 10px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
 busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
 
@@ -89,9 +86,10 @@ url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
 
 try:
     df = pd.read_csv(url)
+    # Filtramos para que aparezcan tanto Disponible como Oportunidad
     df_mostrar = df[df['Estado'].isin(['Disponible', 'Oportunidad'])] if 'Estado' in df.columns else df
 
-    # Filtro activo por botón
+    # Si el botón de oportunidad está activado, filtramos solo esas
     if st.session_state.filtro_oportunidad:
         df_mostrar = df_mostrar[df_mostrar['Estado'] == 'Oportunidad']
 
@@ -126,6 +124,7 @@ try:
                     if 'UBICACION' in datos.columns and pd.notna(row['UBICACION']):
                         st.markdown(f"📍 <span style='color: #004080; font-weight: bold;'>{row['UBICACION']}</span>", unsafe_allow_html=True)
 
+                    # Etiqueta de Oportunidad
                     if 'Estado' in row and row['Estado'] == 'Oportunidad':
                         st.markdown('<div class="badge-oportunidad">🔥 PRECIO DE LIQUIDACIÓN</div>', unsafe_allow_html=True)
 
@@ -133,7 +132,7 @@ try:
                     st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
                     st.markdown("---")
         else:
-            st.info("No hay unidades en esta selección.")
+            st.info("No hay unidades disponibles en esta selección.")
 
     tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
     with tab_autos:
