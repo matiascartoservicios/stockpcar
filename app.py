@@ -71,7 +71,7 @@ def toggle_oportunidad():
     st.session_state.filtro_oportunidad = not st.session_state.filtro_oportunidad
 
 # El botón ahora usa todo el ancho y cambia de texto según el estado
-texto_boton = "❌ VER TODO EL STOCK" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES Y LIQUIDACIONES 🔥"
+texto_boton = "❌ VER TODO EL STOCK" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES!!! 🔥"
 st.button(texto_boton, on_click=toggle_oportunidad, use_container_width=True)
 
 st.markdown("---")
