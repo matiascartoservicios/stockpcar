@@ -4,7 +4,7 @@ import pandas as pd
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- CSS DEFINITIVO ---
+# --- CSS DEFINITIVO (SOLO AJUSTE DE FOTO) ---
 st.markdown("""
     <style>
     [data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
@@ -24,7 +24,17 @@ st.markdown("""
     
     .carrusel-contenedor { display: flex; overflow-x: auto; gap: 10px; scroll-snap-type: x mandatory; padding-bottom: 10px; scrollbar-width: none; }
     .carrusel-contenedor::-webkit-scrollbar { display: none; }
-    .carrusel-img { flex: 0 0 100%; scroll-snap-align: center; border-radius: 12px; height: 320px; object-fit: cover; background-color: #f0f2f6; box-shadow: 2px 2px 8px rgba(0,0,0,0.1); }
+    
+    /* CAMBIO AQUÍ: Altura a 450px y object-fit a contain para que luzca más la unidad */
+    .carrusel-img { 
+        flex: 0 0 100%; 
+        scroll-snap-align: center; 
+        border-radius: 12px; 
+        height: 450px; 
+        object-fit: contain; 
+        background-color: #f0f2f6; 
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.1); 
+    }
     
     .badge-oportunidad {
         background-color: #ff4b2b;
@@ -45,7 +55,7 @@ st.markdown(f"<div style='text-align: center;'><img src='{URL_DE_TU_LOGO}' width
 
 st.markdown("---")
 
-# 3. BOTONES DE CONTACTO (EL DISEÑO QUE TE GUSTA)
+# 3. BOTONES DE CONTACTO
 NUMERO_WA = "+5491164977257" 
 
 st.markdown(f"""
@@ -70,7 +80,6 @@ if 'filtro_oportunidad' not in st.session_state:
 def toggle_oportunidad():
     st.session_state.filtro_oportunidad = not st.session_state.filtro_oportunidad
 
-# El botón ahora usa todo el ancho y cambia de texto según el estado
 texto_boton = "❌ VER TODO EL STOCK" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES!!! 🔥"
 st.button(texto_boton, on_click=toggle_oportunidad, use_container_width=True)
 
@@ -86,10 +95,8 @@ url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
 
 try:
     df = pd.read_csv(url)
-    # Filtramos para que aparezcan tanto Disponible como Oportunidad
     df_mostrar = df[df['Estado'].isin(['Disponible', 'Oportunidad'])] if 'Estado' in df.columns else df
 
-    # Si el botón de oportunidad está activado, filtramos solo esas
     if st.session_state.filtro_oportunidad:
         df_mostrar = df_mostrar[df_mostrar['Estado'] == 'Oportunidad']
 
@@ -124,7 +131,6 @@ try:
                     if 'UBICACION' in datos.columns and pd.notna(row['UBICACION']):
                         st.markdown(f"📍 <span style='color: #004080; font-weight: bold;'>{row['UBICACION']}</span>", unsafe_allow_html=True)
 
-                    # Etiqueta de Oportunidad
                     if 'Estado' in row and row['Estado'] == 'Oportunidad':
                         st.markdown('<div class="badge-oportunidad">🔥 PRECIO DE LIQUIDACIÓN</div>', unsafe_allow_html=True)
 
