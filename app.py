@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-import urllib.parse
 
 # 1. Configuración de la pestaña
 st.set_page_config(page_title="PCAR - Stock", layout="wide", page_icon="🚗")
 
-# --- CSS (TU ESTILO ORIGINAL + BOTÓN COMPARTIR) ---
+# --- CSS DEFINITIVO (SOLO AJUSTE DE FOTO) ---
 st.markdown("""
     <style>
     [data-testid="stVerticalBlock"] > div:has(div.stTextInput) {
@@ -21,9 +20,12 @@ st.markdown("""
     div[data-testid="stTextInput"] > div { margin-top: -10px !important; }
     div[data-baseweb="tab-list"] { width: 100% !important; display: flex !important; justify-content: center !important; }
     button[data-baseweb="tab"] { width: 50% !important; flex-grow: 1 !important; height: 50px !important; }
+    div[data-testid="stMarkdownContainer"] p { font-size: 18px !important; font-weight: bold !important; }
     
     .carrusel-contenedor { display: flex; overflow-x: auto; gap: 10px; scroll-snap-type: x mandatory; padding-bottom: 10px; scrollbar-width: none; }
     .carrusel-contenedor::-webkit-scrollbar { display: none; }
+    
+    /* CAMBIO AQUÍ: Altura a 450px y object-fit a contain para que luzca más la unidad */
     .carrusel-img { 
         flex: 0 0 100%; 
         scroll-snap-align: center; 
@@ -34,18 +36,15 @@ st.markdown("""
         box-shadow: 2px 2px 8px rgba(0,0,0,0.1); 
     }
     
-    /* Estilo para el nuevo botón de compartir */
-    .btn-compartir {
-        background-color: #25D366;
-        color: white !important;
-        padding: 8px;
-        border-radius: 8px;
-        text-decoration: none;
-        display: block;
-        text-align: center;
+    .badge-oportunidad {
+        background-color: #ff4b2b;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 5px;
         font-weight: bold;
-        margin-bottom: 10px;
         font-size: 14px;
+        display: inline-block;
+        margin-bottom: 5px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -56,12 +55,12 @@ st.markdown(f"<div style='text-align: center;'><img src='{URL_DE_TU_LOGO}' width
 
 st.markdown("---")
 
-# 3. BOTONES DE CONTACTO (RECUPERADOS)
+# 3. BOTONES DE CONTACTO
 NUMERO_WA = "+5491164977257" 
 
 st.markdown(f"""
     <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
-        <a href="https://maps.google.com" target="_blank" style="text-decoration: none; width: 50%;">
+        <a href="https://maps.app.goo.gl/QbNXhUTyTyd793Zq8" target="_blank" style="text-decoration: none; width: 50%;">
             <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; border: 1px solid #004080; text-align: center; height: 80px; display: flex; flex-direction: column; justify-content: center;">
                 <span style="color: #004080; font-weight: bold; font-size: 16px;">📍 UBICACIÓN VISITANOS!!</span>
             </div>
@@ -74,50 +73,49 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. LÓGICA DE DATOS
+# --- LÓGICA DEL BOTÓN DE OPORTUNIDADES ---
+if 'filtro_oportunidad' not in st.session_state:
+    st.session_state.filtro_oportunidad = False
+
+def toggle_oportunidad():
+    st.session_state.filtro_oportunidad = not st.session_state.filtro_oportunidad
+
+texto_boton = "❌ VER TODO EL STOCK" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES!!! 🔥"
+st.button(texto_boton, on_click=toggle_oportunidad, use_container_width=True)
+
+st.markdown("---")
+
+# 4. TÍTULO Y BUSCADOR
+st.markdown(f"<h2 style='color: #004080; margin-bottom: 10px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
+busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
+
+# 5. LÓGICA DE DATOS
 SHEET_ID = '1TnIRP4doFAJk5u2lB6qGwqNJHPY4LNXWdx8KQaHWrSc'
-url_csv = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
+url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv'
 
 try:
-    df = pd.read_csv(url_csv)
-    
-    # --- CHEQUEO DE DEEP LINK ---
-    unidad_id = st.query_params.get("id")
+    df = pd.read_csv(url)
+    df_mostrar = df[df['Estado'].isin(['Disponible', 'Oportunidad'])] if 'Estado' in df.columns else df
 
-    # Botón Oportunidades (Original)
-    if 'filtro_oportunidad' not in st.session_state:
-        st.session_state.filtro_oportunidad = False
-
-    def toggle_oportunidad():
-        st.session_state.filtro_oportunidad = not st.session_state.filtro_oportunidad
-
-    if not unidad_id:
-        texto_boton = "❌ VER TODO EL STOCK" if st.session_state.filtro_oportunidad else "🔥 VER OPORTUNIDADES!!! 🔥"
-        st.button(texto_boton, on_click=toggle_oportunidad, use_container_width=True)
-        st.markdown("---")
-        st.markdown(f"<h2 style='color: #004080; margin-bottom: 10px; text-align: center;'>STOCK DISPONIBLE</h2>", unsafe_allow_html=True)
-        busqueda = st.text_input(label="", placeholder="🔍 ¿Qué auto estás buscando?").strip().lower()
-    else:
-        if st.button("⬅️ VOLVER AL CATÁLOGO COMPLETO", use_container_width=True):
-            st.query_params.clear()
-            st.rerun()
-        busqueda = ""
+    if st.session_state.filtro_oportunidad:
+        df_mostrar = df_mostrar[df_mostrar['Estado'] == 'Oportunidad']
 
     def generar_carrusel_html(fotos):
         fotos_validas = [f for f in fotos if pd.notna(f) and str(f).strip().startswith('http')]
         if not fotos_validas: return "<p style='text-align:center; color:gray;'>Sin fotos</p>"
         img_tags = "".join([f'<img src="{f}" class="carrusel-img">' for f in fotos_validas])
-        return f'<div class="carrusel-contenedor">{img_tags}</div>'
+        return f'<div class="carrusel-contenedor">{img_tags}</div><p style="text-align: center; color: #888; font-size: 10px; margin-top: -5px;">⇠ Deslizá para ver más ⇢</p>'
 
     def mostrar_unidades(datos):
-        if unidad_id:
-            datos = datos[datos['ID'].astype(str) == str(unidad_id)]
-        
         if not datos.empty:
-            if busqueda and not unidad_id:
+            if busqueda:
                 mask = (datos['Marca'].astype(str).str.lower().str.contains(busqueda, na=False) | 
                         datos['Modelo'].astype(str).str.lower().str.contains(busqueda, na=False))
                 datos = datos[mask]
+            
+            if datos.empty:
+                st.info("No hay unidades que coincidan con la búsqueda.")
+                return
 
             cols = st.columns(3)
             for i, (index, row) in enumerate(datos.iterrows()):
@@ -125,30 +123,28 @@ try:
                     todas_las_fotos = [row['Foto_URL']] + [row[c] for c in row.index if c.startswith('Foto') and c != 'Foto_URL']
                     st.markdown(generar_carrusel_html(todas_las_fotos), unsafe_allow_html=True)
                     st.subheader(f"{row['Marca']} {row['Modelo']}")
-                    
-                    # --- BOTÓN COMPARTIR ---
-                    link_app = f"https://pcar-stock.streamlit.app/?id={row['ID']}"
-                    msg = urllib.parse.quote(f"Hola! Mirá este {row['Marca']} {row['Modelo']} en PCAR: {link_app}")
-                    st.markdown(f'<a href="https://wa.me/?text={msg}" target="_blank" class="btn-compartir">📤 COMPARTIR UNIDAD</a>', unsafe_allow_html=True)
-                    
                     st.write(f"Año: {row['Año']} | KM: {str(row['KM']).replace('.0', '')}")
+                    
+                    if 'MOTOR' in datos.columns and pd.notna(row['MOTOR']):
+                        st.write(f"⚙️ {row['MOTOR']}")
+
+                    if 'UBICACION' in datos.columns and pd.notna(row['UBICACION']):
+                        st.markdown(f"📍 <span style='color: #004080; font-weight: bold;'>{row['UBICACION']}</span>", unsafe_allow_html=True)
+
+                    if 'Estado' in row and row['Estado'] == 'Oportunidad':
+                        st.markdown('<div class="badge-oportunidad">🔥 PRECIO DE LIQUIDACIÓN</div>', unsafe_allow_html=True)
+
                     precio = str(row['Precio']) if pd.notna(row['Precio']) else "Consultar"
                     st.markdown(f"<h3 style='color: #004080;'>{precio}</h3>", unsafe_allow_html=True)
                     st.markdown("---")
+        else:
+            st.info("No hay unidades disponibles en esta selección.")
 
-    # Filtrado por Estado
-    df_mostrar = df[df['Estado'].isin(['Disponible', 'Oportunidad'])] if 'Estado' in df.columns else df
-    if st.session_state.filtro_oportunidad and not unidad_id:
-        df_mostrar = df_mostrar[df_mostrar['Estado'] == 'Oportunidad']
-
-    if unidad_id:
-        mostrar_unidades(df_mostrar)
-    else:
-        tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
-        with tab_autos:
-            mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)])
-        with tab_motos:
-            mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)])
+    tab_autos, tab_motos = st.tabs(["AUTOS", "MOTOS"])
+    with tab_autos:
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Auto", case=False, na=False)])
+    with tab_motos:
+        mostrar_unidades(df_mostrar[df_mostrar.iloc[:, 0].astype(str).str.contains("Moto", case=False, na=False)])
 
 except Exception as e:
     st.error(f"Error: {e}")
